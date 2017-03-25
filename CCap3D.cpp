@@ -29,11 +29,13 @@ int main(int argc,char** argv){
 	int counter=0;
 	double Z=0;
 
-        stringstream filename;
-
+    stringstream filename;
+    
+    // Insert here the list of conditions characterizing the input. Each entry should match exactly the label used in the FED file.
 	string foodlist[6] = {"1", "2e+07", "6.3e+07", "6.3e+08", "2e+09", "1.1e+10"};
 
 	for(i=0;i<6;i++){
+        // Replace this string with the main folder where the distributions are stored
 		filename.str("/home/diana/workspace/Analysis/R_projects/");
 		filename.seekp(0, ios_base::end);
 		filename<<argv[2]<<"/"<<argv[3]<<'_'<<argv[1]<<"_"<<foodlist[i]<<"_GS"<<gridsize<<"_group"<<group<<".dat";
@@ -58,24 +60,18 @@ int main(int argc,char** argv){
 // NORMALIZATION
 	for(k=0;k<6;k++){
 		Z=0;
-		for(i=0;i<gridsize;i++){
-		for(j=0;j<gridsize;j++){
-		for(l=0;l<gridsize;l++){
-			Z+=joint[k][i][j][l];
-		}
-		}
-		}
+		for(i=0;i<gridsize;i++)
+            for(j=0;j<gridsize;j++)
+                for(l=0;l<gridsize;l++)
+                    Z+=joint[k][i][j][l];
+    
+		
 
-		for(i=0;i<gridsize;i++){
-		for(j=0;j<gridsize;j++){
-		for(l=0;l<gridsize;l++){
-			joint[k][i][j][l]/=Z;
-		}
-		}
-		}
+		for(i=0;i<gridsize;i++)
+            for(j=0;j<gridsize;j++)
+                for(l=0;l<gridsize;l++)
+                    joint[k][i][j][l]/=Z;
 	}
-
-
 
 	double input_pdf[6];
 	int exp_vec[6];
@@ -85,8 +81,9 @@ int main(int argc,char** argv){
 	double Info=0;
 	int index=0;
 
-	while(counter<250){
+	while(counter<1000){
 		
+        // Initialize optimal input distributions with uniform probabilities
 		if(counter==0) {
 			for(i=0;i<6;i++) {
 				input_pdf[i]=1/6.;
@@ -134,12 +131,14 @@ int main(int argc,char** argv){
 			}
 		}
 		
-	        for(i=0;i<6;i++) outfile_info<<input_pdf[i]<<' ';
+        for(i=0;i<6;i++) outfile_info<<input_pdf[i]<<' ';
 		outfile_info<<Info<<endl;
 
 	}
-
+    
+    // write to std output first the optimal input distributions
 	for(i=0;i<6;i++) cout<<input_pdf[i]<<' ';
+    // and then the final value of the channel capacity
 	cout<<Info<<endl;
 
 }
